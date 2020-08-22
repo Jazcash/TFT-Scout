@@ -1,0 +1,30 @@
+* { box-sizing: border-box; }
+
+.overlay {
+    overflow: hidden;
+}
+
+.container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.box {
+    width: 33%;
+    height: 33%;
+    border: 1px solid transparent;
+    color: white;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.debug{
+    background: white;
+}
