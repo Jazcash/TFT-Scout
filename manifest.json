@@ -27,12 +27,12 @@
                 "resizable": false,
                 "transparent": true,
                 "max_size": {
-                    "width": 160,
-                    "height": 160
+                    "width": 350,
+                    "height": 170
                 },
                 "min_size": {
-                    "width": 160,
-                    "height": 160
+                    "width": 350,
+                    "height": 170
                 },
                 "keep_window_location": false
             },

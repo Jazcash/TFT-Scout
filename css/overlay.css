@@ -1,24 +1,29 @@
 * { box-sizing: border-box; }
 
+body {
+    padding: 0;
+    margin: 0;
+}
+
 .overlay {
     overflow: hidden;
+    display: flex;
 }
 
 .container {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
+    right: 0;
+    width: 48%;
     height: 100%;
     display: flex;
     flex-wrap: wrap;
 }
 
 .box {
-    width: 33%;
-    height: 33%;
+    width: 33.33%;
+    height: 33.33%;
     border: 1px solid transparent;
-    color: white;
 }
 
 .hidden {
@@ -26,5 +31,7 @@
 }
 
 .debug{
-    background: white;
+    width: 50%;
+    height: 100%;
+    color: #fff;
 }

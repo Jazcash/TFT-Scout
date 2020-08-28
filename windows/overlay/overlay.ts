@@ -9,6 +9,7 @@ interface PlayerData{
     index: number;
     name: string;
     health: number;
+    xp: number;
 }
 
 export class Overlay {
@@ -17,6 +18,8 @@ export class Overlay {
 
     constructor() {
         this.setup();
+
+        this.setDebug();
     }
 
     private setup(){
@@ -31,6 +34,8 @@ export class Overlay {
             if (this.gameRunning(res)) {
                 this.registerEvents();
                 setTimeout(() => this.setFeatures(), 1000);
+            } else {
+                this.players = [];
             }
         });
 
@@ -39,6 +44,8 @@ export class Overlay {
                 this.selfName = info.res.summoner_info.display_name;
             }
         });
+
+        this.setPosition();
     }
 
     private setFeatures() {
@@ -80,6 +87,10 @@ export class Overlay {
 
         players.sort((a, b) => a.index - b.index);
 
+        if (players.reduce((total, curr) => total + curr.health, 0) === 800){
+            this.reset();
+        }
+        
         if (this.players.length){
             this.updateRoster(players);
         } else {
@@ -90,24 +101,36 @@ export class Overlay {
     private setupRoster(players: PlayerData[]){
         console.info("Initialising roster");
 
-        players.forEach((data, i) => {
-            if (data.name !== this.selfName && data.health > 0){
-                const box = document.querySelector(`#box-${i}`) as HTMLElement;
-                const player: Player = { name: data.name, box: box };
-                player.box.style.borderColor = "green";
-                this.players.push(player);
+        overwolf.games.launchers.events.getInfo(10902, info => {
+            if (info.success){
+                this.selfName = info.res.summoner_info.display_name;
+
+                players.forEach((data, i) => {
+                    if (data.name !== this.selfName && data.health > 0){
+                        const box = document.querySelector(`#box-${i}`) as HTMLElement;
+                        const player: Player = { name: data.name, box: box };
+                        player.box.style.borderColor = "green";
+                        this.players.push(player);
+                    }
+                });
+        
+                this.setPosition();
             }
         });
-
-        this.setPosition();
     }
 
     private updateRoster(players: PlayerData[]){
         console.info("Updating roster");
 
+        const me = players.find(player => player.name === this.selfName);
+        if (me && me.health <= 0){
+            this.reset();
+            return;
+        }
+
         this.players.forEach(player => {
             players.forEach(data => {
-                if (data.health <= 0){
+                if (player.name === data.name && data.health <= 0){
                     this.removePlayer(data.name.trim());
                 }
             });
@@ -123,7 +146,7 @@ export class Overlay {
         if (index !== -1){
             this.players.splice(index, 1);
             player.box.style.visibility = "hidden";
-            this.reset();
+            this.clear();
         }
     }
 
@@ -155,12 +178,25 @@ export class Overlay {
         });
     }
 
-    private reset(){
-        overwolf.log.info(`A player was eliminated, resetting `);
+    private clear(){
+        overwolf.log.info(`A player was eliminated, clearing`);
 
         this.players.forEach(player => {
             player.box.style.borderColor = "green";
         });
+    }
+
+    private reset(){
+        overwolf.log.info("Reset");
+
+        this.players = [];
+    }
+
+    private setDebug(){
+        const debugEl: HTMLElement = document.querySelector(".debug");
+        debugEl.innerHTML = `${this.selfName}<br>${this.players.map(player => player.name).join("<br>")}`;
+
+        setTimeout(() => this.setDebug(), 1000);
     }
 
     private registerEvents() {
@@ -222,7 +258,7 @@ export class Overlay {
         const gameRes = await this.getGameResolution();
         const appRes = await this.getAppResolution();
 
-        overwolf.windows.changeSize("overlay", 160, 160)
+        overwolf.windows.changeSize("overlay", 350, 170)
         overwolf.windows.changePosition("overlay", gameRes.width - appRes.width, gameRes.height - appRes.height);
     }
 
