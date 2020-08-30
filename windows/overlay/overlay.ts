@@ -24,6 +24,10 @@ export class Overlay {
 
     private setup(){
         overwolf.games.onGameInfoUpdated.addListener((res) => {
+            console.debug("1", res);
+            if (res.gameChanged){
+                this.players = [];
+            }
             if (this.gameLaunched(res)) {
                 this.registerEvents();
                 setTimeout(() => this.setFeatures(), 1000);
@@ -31,6 +35,7 @@ export class Overlay {
         });
 
         overwolf.games.getRunningGameInfo((res) => {
+            console.debug("2", res);
             if (this.gameRunning(res)) {
                 this.registerEvents();
                 setTimeout(() => this.setFeatures(), 1000);
@@ -87,36 +92,34 @@ export class Overlay {
 
         players.sort((a, b) => a.index - b.index);
 
-        if (players.reduce((total, curr) => total + curr.health, 0) === 800){
-            this.reset();
-        }
-        
-        if (this.players.length){
-            this.updateRoster(players);
-        } else {
-            this.setupRoster(players);
+        if (players.length){
+            if (this.players.length && players.length){
+                this.updateRoster(players);
+            } else {
+                this.setupRoster(players);
+            }
         }
     }
 
-    private setupRoster(players: PlayerData[]){
-        console.info("Initialising roster");
+    private async setupRoster(players: PlayerData[]){
+        console.info("Initialising roster", players);
 
-        overwolf.games.launchers.events.getInfo(10902, info => {
-            if (info.success){
-                this.selfName = info.res.summoner_info.display_name;
-
-                players.forEach((data, i) => {
-                    if (data.name !== this.selfName && data.health > 0){
-                        const box = document.querySelector(`#box-${i}`) as HTMLElement;
-                        const player: Player = { name: data.name, box: box };
-                        player.box.style.borderColor = "green";
-                        this.players.push(player);
-                    }
-                });
+        if (!this.selfName){
+            this.selfName = await this.getSummonerName();
+        }
         
-                this.setPosition();
+        this.reset();
+
+        players.forEach((data, i) => {
+            if (data.name !== this.selfName){
+                const box = document.querySelector(`#box-${i}`) as HTMLElement;
+                const player: Player = { name: data.name, box: box };
+                player.box.style.borderColor = "green";
+                this.players.push(player);
             }
         });
+
+        this.setPosition();
     }
 
     private updateRoster(players: PlayerData[]){
@@ -145,7 +148,7 @@ export class Overlay {
 
         if (index !== -1){
             this.players.splice(index, 1);
-            player.box.style.visibility = "hidden";
+            player.box.style.borderColor = "transparent";
             this.clear();
         }
     }
@@ -188,6 +191,8 @@ export class Overlay {
 
     private reset(){
         overwolf.log.info("Reset");
+
+        document.querySelectorAll(`.box`).forEach((box: any) => box.style.borderColor = "transparent");
 
         this.players = [];
     }
@@ -256,6 +261,11 @@ export class Overlay {
 
     private async setPosition() {
         const gameRes = await this.getGameResolution();
+
+        if (gameRes === null){
+            return;
+        }
+
         const appRes = await this.getAppResolution();
 
         overwolf.windows.changeSize("overlay", 350, 170)
@@ -265,10 +275,14 @@ export class Overlay {
     private getGameResolution(): Promise<{ width: number, height: number }> {
         return new Promise(resolve => {
             overwolf.games.getRunningGameInfo((result) => {
-                resolve({
-                    width: result.logicalWidth,
-                    height: result.logicalHeight
-                });
+                if (result && result.logicalWidth){
+                    resolve({
+                        width: result.logicalWidth,
+                        height: result.logicalHeight
+                    });
+                } else {
+                    resolve(null);
+                }
             });
         });
     }
@@ -280,6 +294,21 @@ export class Overlay {
                     width: result.window.width,
                     height: result.window.height
                 });
+            });
+        });
+    }
+
+    private getSummonerName() : Promise<string> {
+        return new Promise(resolve => {
+            overwolf.games.launchers.events.getInfo(10902, info => {
+                if (info.success){
+                    resolve(info.res.summoner_info.display_name);
+                } else {
+                    setTimeout(() => {
+                        console.log("Failed to get summoner name, trying again in 2s");
+                        resolve(this.getSummonerName());
+                    }, 2000);
+                }
             });
         });
     }
