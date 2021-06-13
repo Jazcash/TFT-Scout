@@ -61,7 +61,7 @@ module.exports = class OverwolfPlugin {
 
     const
       version = pkg.version,
-      name = manifest.meta.name,
+      name = "TFT-Scout",
       opkPath = path.join(__dirname, `releases/${name}-${version}${(suffix) ? `.${suffix}` : ''}.opk`);
 
     await this.deleteFile(opkPath);

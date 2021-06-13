@@ -8,10 +8,10 @@
         "minimum-overwolf-version": "0.120.0",
         "description": "TFT Scout",
         "dock_button_title": "TFT Scout",
-        "icon": "dist/icons/iconMouseOver.png",
-        "icon_gray": "dist/icons/iconMouseNormal.png",
-        "launcher_icon": "dist/icons/icon.ico",
-        "window_icon": "dist/icons/windowIcon.png"
+        "icon": "icons/iconMouseOver.png",
+        "icon_gray": "icons/iconMouseNormal.png",
+        "launcher_icon": "icons/icon.ico",
+        "window_icon": "icons/windowIcon.png"
     },
     "permissions": [
         "GameInfo"
@@ -20,7 +20,7 @@
         "start_window": "overlay",
         "windows": {
             "overlay": {
-                "file": "./dist/overlay.html",
+                "file": "overlay.html",
                 "in_game_only": true,
                 "focus_game_takeover": "ReleaseOnHidden",
                 "focus_game_takeover_release_hotkey": "showhide",
@@ -37,7 +37,7 @@
                 "keep_window_location": false
             },
             "background": {
-                "file": "./dist/background.html",
+                "file": "background.html",
                 "is_background_page": true
             }
         },
@@ -75,7 +75,7 @@
         },
         "force_browser": "user",
         "developer": {
-            "enable_auto_refresh": true,
+            "enable_auto_refresh": false,
             "reload_delay": 1000,
             "filter": "*.*"
         }

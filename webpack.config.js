@@ -4,10 +4,10 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const OverwolfPlugin = require('./overwolf.webpack');
 
-module.exports = {
+module.exports = env => ({
     entry: {
-        background: './windows/background/background.ts',
-        overlay: './windows/overlay/overlay.ts',
+        background: './src/background/background.ts',
+        overlay: './src/overlay/overlay.ts',
     },
     devtool: 'inline-source-map',
     module: {
@@ -24,7 +24,7 @@ module.exports = {
     },
     output: {
       path: `${__dirname}/dist`,
-      filename: '[name]/[name].js'
+      filename: 'js/[name].js'
     },
     plugins: [
         new CleanWebpackPlugin,
@@ -32,14 +32,15 @@ module.exports = {
             patterns: [ { from: "public", to: "./" } ],
         }),
         new HtmlWebpackPlugin({
-            template: './windows/overlay/overlay.html',
-            filename: `${__dirname}/dist/overlay/overlay.html`,
+            template: './src/overlay/overlay.html',
+            filename: `${__dirname}/dist/overlay.html`,
             chunks: ['overlay']
         }),
         new HtmlWebpackPlugin({
-            template: './windows/background/background.html',
-            filename: `${__dirname}/dist/background/background.html`,
+            template: './src/background/background.html',
+            filename: `${__dirname}/dist/background.html`,
             chunks: ['overlay']
-        })
+        }),
+        new OverwolfPlugin(env)
     ]
-}
+});
