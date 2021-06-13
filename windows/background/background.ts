@@ -1,6 +1,4 @@
-import { OWGames } from '../../odk-ts/ow-games';
-import { OWGameListener } from '../../odk-ts/ow-game-listener';
-import { OWWindow } from '../../odk-ts/ow-window';
+import { OWWindow, OWGameListener, OWGames } from "@overwolf/overwolf-api-ts";
 import RunningGameInfo = overwolf.games.RunningGameInfo;
 
 class BackgroundController {
@@ -22,7 +20,7 @@ class BackgroundController {
         const gameIsRunning = await this.isTftRunning();
 
         if (gameIsRunning) {
-            overwolf.log.info("TFT running, overlay ready");
+            //overwolf.log.info("TFT running, overlay ready");
             this.overlay.restore();
         }
     }

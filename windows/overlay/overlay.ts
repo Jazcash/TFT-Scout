@@ -1,3 +1,5 @@
+import { OWGamesEvents } from "@overwolf/overwolf-api-ts/dist";
+
 declare var window: any;
 
 interface Player {
@@ -15,6 +17,7 @@ interface PlayerData{
 export class Overlay {
     private players: Player[] = [];
     private selfName: string = "";
+    private tftListener: any;
 
     constructor() {
         this.setup();
@@ -23,19 +26,37 @@ export class Overlay {
     }
 
     private setup(){
-        overwolf.games.onGameInfoUpdated.addListener((res) => {
-            console.debug("1", res);
-            if (res.gameChanged){
-                this.players = [];
-            }
-            if (this.gameLaunched(res)) {
-                this.registerEvents();
-                setTimeout(() => this.setFeatures(), 1000);
-            }
-        });
+        this.tftListener = new OWGamesEvents({
+            onInfoUpdates: ((res) => {
+                console.debug("1", res);
+                if (res.gameChanged){
+                    this.players = [];
+                }
+                if (this.gameLaunched(res)) {
+                    // this.registerEvents();
+                    // setTimeout(() => this.setFeatures(), 1000);
+                    console.log(res);
+                    this.handleEvent(res.event.info[0]);
+                }
+            }),
+            onNewEvents: ((event) => {
+                this.handleEvent(event.info[0]);
+            }),
+        }, ["roster", "match_info"]);
+        
+        // overwolf.games.onGameInfoUpdated.addListener((res) => {
+        //     console.debug("1", res);
+        //     if (res.gameChanged){
+        //         this.players = [];
+        //     }
+        //     if (this.gameLaunched(res)) {
+        //         this.registerEvents();
+        //         setTimeout(() => this.setFeatures(), 1000);
+        //     }
+        // });
 
         overwolf.games.getRunningGameInfo((res) => {
-            console.debug("2", res);
+            //console.debug("2", res);
             if (this.gameRunning(res)) {
                 this.registerEvents();
                 setTimeout(() => this.setFeatures(), 1000);
@@ -56,14 +77,14 @@ export class Overlay {
     private setFeatures() {
         overwolf.games.events.setRequiredFeatures(["roster", "match_info"], (info: any) => {
             if (!info.success) {
-                overwolf.log.info("Could not set required features: " + info.reason);
-                overwolf.log.info("Trying in 2 seconds");
+                console.log("Could not set required features: " + info.reason);
+                console.log("Trying in 2 seconds");
                 window.setTimeout(() => this.setFeatures(), 2000);
                 return;
             }
 
-            overwolf.log.info("Set required features:");
-            overwolf.log.info(JSON.stringify(info));
+            console.log("Set required features:");
+            console.log(JSON.stringify(info));
         });
     }
 
@@ -125,12 +146,6 @@ export class Overlay {
     private updateRoster(players: PlayerData[]){
         console.info("Updating roster");
 
-        const me = players.find(player => player.name === this.selfName);
-        if (me && me.health <= 0){
-            this.reset();
-            return;
-        }
-
         this.players.forEach(player => {
             players.forEach(data => {
                 if (player.name === data.name && data.health <= 0){
@@ -162,7 +177,7 @@ export class Overlay {
         const opponent = this.players.find(player => player.name === opponentName);
         const index = this.players.indexOf(opponent);
 
-        overwolf.log.info(`LAST OPPONENT WAS ${opponentName}`);
+        console.log(`LAST OPPONENT WAS ${opponentName}`);
 
         if (index !== -1){
             this.players.splice(index, 1);
@@ -182,7 +197,7 @@ export class Overlay {
     }
 
     private clear(){
-        overwolf.log.info(`A player was eliminated, clearing`);
+        console.log(`A player was eliminated, clearing`);
 
         this.players.forEach(player => {
             player.box.style.borderColor = "green";
@@ -190,7 +205,7 @@ export class Overlay {
     }
 
     private reset(){
-        overwolf.log.info("Reset");
+        console.log("Reset");
 
         document.querySelectorAll(`.box`).forEach((box: any) => box.style.borderColor = "transparent");
 
@@ -198,14 +213,14 @@ export class Overlay {
     }
 
     private setDebug(){
-        const debugEl: HTMLElement = document.querySelector(".debug");
-        debugEl.innerHTML = `${this.selfName}<br>${this.players.map(player => player.name).join("<br>")}`;
+        // const debugEl: HTMLElement = document.querySelector(".debug");
+        // debugEl.innerHTML = `${this.selfName}<br>${this.players.map(player => player.name).join("<br>")}`;
 
-        setTimeout(() => this.setDebug(), 1000);
+        // setTimeout(() => this.setDebug(), 1000);
     }
 
     private registerEvents() {
-        overwolf.log.info("register events");
+        console.log("register events");
 
         overwolf.games.events.onInfoUpdates.addListener((event) => {
             this.handleEvent(event.info[0]);
@@ -234,7 +249,7 @@ export class Overlay {
             return false;
         }
 
-        overwolf.log.info("TFT Launched");
+        console.log("TFT Launched");
         return true;
 
     }
@@ -254,7 +269,7 @@ export class Overlay {
             return false;
         }
 
-        overwolf.log.info("TFT running");
+        console.log("TFT running");
         return true;
 
     }

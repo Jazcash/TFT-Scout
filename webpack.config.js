@@ -1,4 +1,8 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const CopyPlugin = require("copy-webpack-plugin");
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const OverwolfPlugin = require('./overwolf.webpack');
 
 module.exports = {
     entry: {
@@ -16,13 +20,17 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.ts']
+        extensions: ['.ts', ".js"]
     },
     output: {
       path: `${__dirname}/dist`,
       filename: '[name]/[name].js'
     },
     plugins: [
+        new CleanWebpackPlugin,
+        new CopyPlugin({
+            patterns: [ { from: "public", to: "./" } ],
+        }),
         new HtmlWebpackPlugin({
             template: './windows/overlay/overlay.html',
             filename: `${__dirname}/dist/overlay/overlay.html`,

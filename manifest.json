@@ -8,10 +8,10 @@
         "minimum-overwolf-version": "0.120.0",
         "description": "TFT Scout",
         "dock_button_title": "TFT Scout",
-        "icon": "icons/iconMouseOver.png",
-        "icon_gray": "icons/iconMouseNormal.png",
-        "launcher_icon": "icons/icon.ico",
-        "window_icon": "icons/windowIcon.png"
+        "icon": "public/icons/iconMouseOver.png",
+        "icon_gray": "public/icons/iconMouseNormal.png",
+        "launcher_icon": "public/icons/icon.ico",
+        "window_icon": "public/icons/windowIcon.png"
     },
     "permissions": [
         "GameInfo"

@@ -4,13 +4,13 @@
     "module": "none",
     "sourceMap": true,
     "outDir": "./dist",
+    "moduleResolution": "node",
     "removeComments": true,
     "strict": true,
     "noImplicitAny": false,
     "strictNullChecks": false,
-    "typeRoots": [
-      "/types", 
-      "/node_modules/@overwolf/types"
+    "types": [
+      "@overwolf/types"
     ],
     "rootDirs": [
       "./src"
