@@ -10,6 +10,8 @@ Green squares are your next possible opponents
 
 Overwolf does't support unofficial extensions, and to make this availabel on the overwolf app store, it would need to be vetted by Riot, so instead you have to install it as a development plugin:
 
+Install Overwolf https://www.overwolf.com/apps/
+
 Download the latest .opk file from https://github.com/Jazcash/TFT-Scout/releases
 
 Open Overwolf settings (right click it in tray)
