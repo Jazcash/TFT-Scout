@@ -32,4 +32,4 @@ Launch
 
 ![image](https://user-images.githubusercontent.com/1434248/121818598-0e233280-cc80-11eb-9c67-1fcffe23fb4e.png)
 
-You know it's working when there's squares on the minimap. Sometimes the app stalls or fails to load automatically, reinstalling the extension usually fixes that. The tool is useless when there's 3 total players left in the game, will make sure they're hidden at this stage in a future version.
+You know it's working when there's squares on the minimap. Sometimes the app stalls or fails to load automatically, reinstalling the extension usually fixes that. Otherwise try restarting your League client. The tool is useless when there's 3 total players left in the game, will make sure they're hidden at this stage in a future version.
